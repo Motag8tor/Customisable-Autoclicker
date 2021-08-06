@@ -2,45 +2,58 @@ import appJar, clicker
 from pynput.keyboard import Listener, Key
 
 click_thread = ""
-start_key = Key.f8
-stop_key = Key.f9
+start_key = Key.f6
+stop_key = Key.f6
 
-def goPress(press):                                                                                                                                                                                                                                      
+# ----------- Spam function -----------
+
+def onPress(press):                                                                                                                                                                                                                                      
     global click_thread
-    if press == "Go <F8>":
+    if press == "Go <F6>":
+        if click_thread != "":
+            click_thread.exit()
+            click_thread = ""
+
         button = app.getEntry("key")
+        if button == "":
+            print("Please enter a character to spam")
+            return
         
         try:
           delay = float(app.getEntry("delay"))
         except:
           delay = 0.001
 
-        if delay < 0.001:
+        if delay < 0.001: # Do not allow delays less than 0.001s
             delay = 0.001
 
-        if click_thread != "":
-            click_thread.exit()
+        click_thread = clicker.Clicker(delay, button) # Handle spam in another thread to keep the GUI from freezing
+        click_thread.start() # Begin
 
-        if app.getEntry("key") == "":
-            print("Please enter a character to spam")
-            return False
-
-        click_thread = clicker.Clicker(delay, button)
-        click_thread.start()
-            
         print("Spamming '" + button + "' with delay " + str(delay) + " seconds")
-    elif press == "Stop <F9>":
+    elif press == "Stop <F6>":
         if click_thread != "":
             click_thread.exit()
+            click_thread = ""
             print("Spamming Stopped")
         else:
             print("The Autoclicker is not currently running")
 
-def on_press(key):
-    if key == start_key:
-        goPress("Go <F8>")
-    elif key == stop_key:
-        goPress("Stop <F9>")
+# ----------- Detect hotkey presses -----------
+
+def hotkey(key):
+    if start_key == stop_key and key == start_key:
+        if click_thread != "":
+            onPress("Stop <F6>")
+        else:
+            onPress("Go <F6>")
+    else:
+        if key == start_key:
+            onPress("Go <F6>")
+        elif key == stop_key:
+            onPress("Stop <F6>")
+
+# ----------- appJar Interface -----------
             
 app = appJar.gui("Autoclicker")
 app.setSize("400x300")
@@ -54,10 +67,10 @@ app.addLabel("Enter the delay in seconds", row=3)
 app.addEntry("delay", row=4)
 
 app.setSticky("new")
-app.addButton("Go <F8>", goPress, row=8)
-app.addButton("Stop <F9>", goPress, row=9)
+app.addButton("Go <F6>", onPress, row=8)
+app.addButton("Stop <F6>", onPress, row=9)
 
-listener = Listener(on_press=on_press)
-listener.start()
+listener = Listener(on_press=hotkey) # Call the hotkey function when keys are pressed
+listener.start() # Begin listening for keypresses
     
-app.go()
+app.go() # Run the app
