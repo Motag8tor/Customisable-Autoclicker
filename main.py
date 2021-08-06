@@ -4,13 +4,13 @@ click_thread = ""
 
 def goPress(press):                                                                                                                                                                                                                                      
     global click_thread
-    if(press == "Go"):
+    if press == "Go":
         button = app.getEntry("key")
         
         try:
           delay = float(app.getEntry("delay"))
         except:
-          delay = 0.01
+          delay = 0.001
 
         if delay < 0.001:
             delay = 0.001
