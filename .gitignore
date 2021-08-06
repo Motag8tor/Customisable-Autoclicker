@@ -1,4 +1,4 @@
-
-*.json
-.vs/Customisable-Autoclicker/v17/.suo
+env/
+.vs/
 *.sqlite
+.vs/Customisable-Autoclicker/v17/.suo
