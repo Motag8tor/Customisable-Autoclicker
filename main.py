@@ -76,6 +76,7 @@ def updateHotkeys():
     stop_key = checkKey(key)
     app.setButton("Stop", "Stop <" + key + ">")
     print("Stop Hotkey has been set to " + key)
+    app.disableButton("Confirm Hotkeys")
 
 # ----------- Update Hotkeys -----------
 
@@ -107,6 +108,10 @@ def checkKey(key):
     else:
         return Key.f6 # Default Hotkey
 
+
+def enableHotkeyConfirm():
+    app.enableButton("Confirm Hotkeys")
+
 # ----------- appJar Interface -----------
             
 app = appJar.gui("Autoclicker")
@@ -126,10 +131,15 @@ app.addLabel("Change Hotkeys", row=6)
 hotkeys = ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"] # Hotkeys array
 
 app.addLabelOptionBox("Start Hotkey", hotkeys, row=7)
-app.addLabelOptionBox("Stop Hotkey", hotkeys, row=8)
 app.setOptionBox("Start Hotkey", 5)
+app.setOptionBoxChangeFunction("Start Hotkey", enableHotkeyConfirm)
+
+app.addLabelOptionBox("Stop Hotkey", hotkeys, row=8)
 app.setOptionBox("Stop Hotkey", 5)
-app.addNamedButton("Confirm Hotkeys", "hotkeyStop", updateHotkeys, row=9)
+app.setOptionBoxChangeFunction("Stop Hotkey", enableHotkeyConfirm)
+
+app.addButton("Confirm Hotkeys", updateHotkeys, row=9)
+app.disableButton("Confirm Hotkeys")
 
 app.addNamedButton("Go <F6>", "Go", onPress, row=11)
 app.addNamedButton("Stop <F6>", "Stop", onPress, row=11)
